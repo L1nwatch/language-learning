@@ -58,12 +58,20 @@ class DataManager:
         self.connection.row_factory = sqlite3.Row
         # Create a fresh cursor after setting row_factory
         cursor = self.connection.cursor()
-        result = cursor.execute("SELECT * FROM ALLERROR ORDER BY error_rate DESC;")
+
+        # Use custom sorting to rank NULLs at the top
+        result = cursor.execute("""
+            SELECT * 
+            FROM ALLERROR 
+            ORDER BY 
+                CASE WHEN error_rate IS NULL THEN 0 ELSE 1 END, 
+                error_rate DESC;
+        """)
+
         # Convert rows to dictionaries
         data = [dict(row) for row in result.fetchall()]
         self._close()
         return data
-
 
     def _update_table_from_json(self, json_path):
         self._connect()
@@ -78,6 +86,16 @@ class DataManager:
             elif each_data["type"] == "word":
                 self.cursor.execute("INSERT INTO ALLERROR (type, answer) VALUES (?, ?);",
                                     (each_data["type"], each_data["answer"]))
+        self.connection.commit()
+        self._close()
+
+    def save_result(self, result, correct, feedback):
+        update_error_rate_template = "UPDATE ALLERROR SET error_rate = error_num / practice_num WHERE id = ?;"
+        self._connect()
+        self.cursor.execute("UPDATE ALLERROR SET practice_num = practice_num + 1 WHERE id = ?;", (result["id"],))
+        if not correct:
+            self.cursor.execute("UPDATE ALLERROR SET error_num = error_num + 1 WHERE id = ?;", (result["id"],))
+        self.cursor.execute(update_error_rate_template, (result["id"],))
         self.connection.commit()
         self._close()
 

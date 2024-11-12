@@ -5,7 +5,7 @@
 """
 import os
 from pydub import AudioSegment
-from difflib import Differ
+
 
 __author__ = '__L1n__w@tch'
 
@@ -26,15 +26,4 @@ class Review:
         segment.export(temp_file, format="mp3")
         return temp_file
 
-    def highlight_differences(self, user_input, correct_answer):
-        differ = Differ()
-        comparison = list(differ.compare(correct_answer.split(), user_input.split()))
-        highlighted = []
-        for word in comparison:
-            if word.startswith("+"):
-                highlighted.append(f"<span style='color: green;'>{word[2:]}</span>")
-            elif word.startswith("-"):
-                highlighted.append(f"<span style='color: red;'>{word[2:]}</span>")
-            else:
-                highlighted.append(word[2:])
-        return " ".join(highlighted)
+

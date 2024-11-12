@@ -35,11 +35,12 @@
     "answer": "The main attraction is the large swimming pool with Salt water"
   },
   {
-    "type": "listening",
-    "file": "ielts_9_3_1.mp3",
-    "start_time": "03:08",
-    "end_time": "03:21",
-    "answer": "That's right. And it isn't far from the bench, either only three hundred metres, and only around half a kilometre to some shops, so you don't have to be too energetic"
+    "type": "word",
+    "answer": "kilometre"
+  },
+  {
+    "type": "word",
+    "answer": "energetic"
   },
   {
     "type": "listening",
@@ -63,35 +64,22 @@
     "answer": "any kite-surfing? My friend's quite keen."
   },
   {
-    "type": "listening",
-    "file": "ielts_9_3_1.mp3",
-    "start_time": "04:15",
-    "end_time": "04:20",
-    "answer": "There's also satellite TV in the apartments"
+    "type": "word",
+    "answer": "balcony"
   },
   {
-    "type": "listening",
-    "file": "ielts_9_3_1.mp3",
-    "start_time": "04:44",
-    "end_time": "04:51",
-    "answer": "it's an older style house with greek paintings in every room and a balcony outside"
+    "type": "word",
+    "answer": "satellite"
   },
   {
     "type": "listening",
     "file": "ielts_9_3_1.mp3",
     "start_time": "04:52",
-    "end_time": "05:00",
-    "answer": "well, there are forests all around and they hide a supermarket just down the road, so that's very useful for all your shopping needs"
-  },
-  {
-    "type": "listening",
-    "file": "ielts_9_3_1.mp3",
-    "start_time": "04:52",
-    "end_time": "05:00",
+    "end_time": "05:01",
     "answer": "well, there are forests all around and they hide a supermarket just down the road, so that's very useful for all your shopping needs"
   },
   {
     "type": "word",
-    "word": "brochure"
+    "answer": "brochure"
   }
 ]

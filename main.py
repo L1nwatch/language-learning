@@ -7,7 +7,7 @@
 __author__ = '__L1n__w@tch'
 
 import os
-import json
+from DataManager import DataManager
 from Review import Review
 from flask import Flask, render_template, request, redirect, url_for
 from difflib import Differ
@@ -17,9 +17,8 @@ app = Flask(__name__)
 review = Review()
 
 # Load cases
-with open("data/cases.json", "r") as f:
-    CASES = json.load(f)
-
+dm = DataManager()
+CASES = dm.load_cases()
 # Global variables
 CURRENT_CASE_INDEX = -1  # Start without any active case
 CURRENT_CASE = None  # Active case

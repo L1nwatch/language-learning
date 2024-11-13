@@ -10,6 +10,7 @@ import os
 from DataManager import DataManager
 from Review import Review
 from flask import Flask, render_template, request, redirect, url_for
+from utils.common import get_audio_path
 from difflib import Differ
 
 # Flask App Initialization
@@ -23,7 +24,7 @@ CASES = DM.load_cases()
 CURRENT_CASE_INDEX = -1  # Start without any active case
 CURRENT_CASE = dict()  # Active case
 TOTAL_CASES = len(CASES)  # Total number of audio cases
-PROGRESS = f"{CURRENT_CASE_INDEX + 1}/{TOTAL_CASES}" if CURRENT_CASE_INDEX >= 0 else "0/0"
+PROGRESS = {"completed": CURRENT_CASE_INDEX + 1, "total": TOTAL_CASES}
 
 
 def _highlight_differences(user_input, correct_answer):
@@ -48,14 +49,15 @@ def _initialize_index():
         CURRENT_CASE_INDEX = 0
         CURRENT_CASE = CASES[CURRENT_CASE_INDEX]
         review.prepare_audio_segment(CURRENT_CASE)
-        PROGRESS = f"{CURRENT_CASE_INDEX + 1}/{TOTAL_CASES}"
+        PROGRESS["completed"] = CURRENT_CASE_INDEX + 1
 
     return render_template(
         "index.html",
         feedback=None,
-        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime("static/segment.mp3"))),
+        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime(get_audio_path()))),
         user_input="",
-        progress=PROGRESS
+        progress=PROGRESS,
+        case_info=CURRENT_CASE
     )
 
 
@@ -66,13 +68,14 @@ def _index_next():
         CURRENT_CASE_INDEX = 0  # Loop back to the first case
     CURRENT_CASE = CASES[CURRENT_CASE_INDEX]
     review.prepare_audio_segment(CURRENT_CASE)
-    PROGRESS = f"{CURRENT_CASE_INDEX + 1}/{TOTAL_CASES}"
+    PROGRESS["completed"] = CURRENT_CASE_INDEX + 1
     return render_template(
         "index.html",
         feedback=None,
-        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime("static/segment.mp3"))),
+        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime(get_audio_path()))),
         user_input="",
-        progress=PROGRESS
+        progress=PROGRESS,
+        case_info=CURRENT_CASE
     )
 
 
@@ -96,9 +99,10 @@ def _index_post(user_input):
     return render_template(
         "index.html",
         feedback=feedback,
-        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime("static/segment.mp3"))),
+        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime(get_audio_path()))),
         user_input=user_input,
-        progress=PROGRESS
+        progress=PROGRESS,
+        case_info=CURRENT_CASE
     )
 
 

@@ -20,10 +20,29 @@
             padding: 10px 20px;
             font-size: 16px;
         }
-        .progress {
-            margin-bottom: 20px;
+        .progress-container {
+            margin: 20px 0;
+        }
+        .progress-header {
+            margin-bottom: 10px;
             font-size: 18px;
             font-weight: bold;
+        }
+        .progress-bar {
+            background: #f3f3f3;
+            border-radius: 5px;
+            height: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar div {
+            background: #4caf50;
+            height: 100%;
+            border-radius: 5px;
+        }
+        .progress-details {
+            margin-top: 10px;
+            font-size: 14px;
         }
         .feedback {
             margin-top: 20px;
@@ -34,9 +53,22 @@
 <body>
 <h1>Language Review Tool</h1>
 
-<div class="progress">
-    Progress: {{ progress }}
+<div class="progress-container">
+    <div class="progress-header">
+        <strong>Progress:</strong> {{ progress.completed }}/{{ progress.total }} ({{ '%.2f'|format((progress.completed / progress.total) * 100) }}%)
+    </div>
+    <div class="progress-bar">
+        <div style="width: {{ (progress.completed / progress.total) * 100 }}%;"></div>
+    </div>
+    {% if case_info %}
+    <div class="progress-details">
+        <span><strong>Practice Times:</strong> {{ case_info.practice_num }}</span> |
+        <span><strong>Error Times:</strong> {{ case_info.error_num }}</span> |
+        <span><strong>Error Rate:</strong> {{ '%.2f'|format(case_info.error_rate * 100) }}%</span>
+    </div>
+    {% endif %}
 </div>
+
 
 <audio controls>
     <source src="{{ audio_file }}" type="audio/mpeg">

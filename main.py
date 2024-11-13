@@ -66,13 +66,13 @@ def _index_next():
         CURRENT_CASE_INDEX = 0  # Loop back to the first case
     CURRENT_CASE = CASES[CURRENT_CASE_INDEX]
     review.prepare_audio_segment(CURRENT_CASE)
-    progress = f"{CURRENT_CASE_INDEX + 1}/{TOTAL_CASES}"
+    PROGRESS = f"{CURRENT_CASE_INDEX + 1}/{TOTAL_CASES}"
     return render_template(
         "index.html",
         feedback=None,
         audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime("static/segment.mp3"))),
         user_input="",
-        progress=progress
+        progress=PROGRESS
     )
 
 

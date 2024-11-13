@@ -10,8 +10,12 @@ import os.path
 
 ROOT = os.path.dirname(os.path.dirname(__file__))
 RESOURCE_ROOT = os.path.join(ROOT, "static")
+TEMPLATES_ROOT = os.path.join(ROOT, "templates")
 
 
 def get_audio_path():
-    global RESOURCE_ROOT
-    return os.path.join(RESOURCE_ROOT, "segment.mp3")
+    return "segment.mp3"
+
+
+def get_review_html_path():
+    return "review.html"

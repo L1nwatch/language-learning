@@ -12,7 +12,7 @@ __author__ = '__L1n__w@tch'
 
 
 
-class Review:
+class Reviewer:
     listening_root = "/Users/watch/PycharmProjects/language-learning/data/listening"
 
     def _time_to_milliseconds(self, time_str):

@@ -18,12 +18,12 @@ def client():
 
 
 def test_index_get(client):
-    response = client.get("/")
+    response = client.get("/review")
     assert response.status_code == 200
     assert b"progress" in response.data
 
 
 def test_index_show_practice_times(client):
-    response = client.get("/")
+    response = client.get("/review")
     assert response.status_code == 200
     assert b"Practice Times" in response.data

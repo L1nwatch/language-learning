@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Note</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 15px;
+            color: #555;
+        }
+        input, textarea, select {
+            margin-top: 5px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        function updateFormRequirements() {
+            const type = document.getElementById("type").value;
+
+            // Get input fields and labels
+            const answer = document.getElementById("answer");
+            const file = document.getElementById("file");
+            const startTime = document.getElementById("start_time");
+            const endTime = document.getElementById("end_time");
+
+            const fileLabel = document.querySelector("label[for='file']");
+            const startTimeLabel = document.querySelector("label[for='start_time']");
+            const endTimeLabel = document.querySelector("label[for='end_time']");
+
+            if (type === "listening") {
+                // Set all fields as required for "listening"
+                answer.required = true;
+                file.required = true;
+                startTime.required = true;
+                endTime.required = true;
+
+                // Update labels to show "required"
+                fileLabel.textContent = "File (required):";
+                startTimeLabel.textContent = "Start Time (required):";
+                endTimeLabel.textContent = "End Time (required):";
+            } else if (type === "word") {
+                // Only "type" and "answer" are required for "word"
+                answer.required = true;
+                file.required = false;
+                startTime.required = false;
+                endTime.required = false;
+
+                // Update labels to show "optional"
+                fileLabel.textContent = "File (optional):";
+                startTimeLabel.textContent = "Start Time (optional):";
+                endTimeLabel.textContent = "End Time (optional):";
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Add New Note</h1>
+    <form action="/add" method="POST">
+        <label for="type">Type (required):</label>
+        <select id="type" name="type" required onchange="updateFormRequirements()">
+            <option value="" disabled selected>Select type</option>
+            <option value="listening">Listening</option>
+            <option value="word">Word</option>
+        </select>
+
+        <label for="answer">Answer (required):</label>
+        <textarea id="answer" name="answer" rows="4"></textarea>
+
+        <label for="file">File (optional):</label>
+        <input type="text" id="file" name="file">
+
+        <label for="start_time">Start Time (optional):</label>
+        <input type="text" id="start_time" name="start_time">
+
+        <label for="end_time">End Time (optional):</label>
+        <input type="text" id="end_time" name="end_time">
+
+        <button type="submit">Add Note</button>
+    </form>
+</div>
+</body>
+</html>

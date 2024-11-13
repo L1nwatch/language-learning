@@ -14,7 +14,8 @@ TEMPLATES_ROOT = os.path.join(ROOT, "templates")
 
 
 def get_audio_path():
-    return "segment.mp3"
+    global RESOURCE_ROOT
+    return os.path.join(RESOURCE_ROOT, "segment.mp3")
 
 
 def get_review_html_path():

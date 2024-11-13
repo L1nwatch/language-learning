@@ -33,7 +33,7 @@ class DataManager:
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS ALLERROR (
     id INTEGER PRIMARY KEY,
     type TEXT NOT NULL,
-    answer TEXT,
+    answer TEXT NOT NULL,
     file TEXT,
     start_time TEXT,
     end_time TEXT,
@@ -90,11 +90,11 @@ class DataManager:
         self._close()
 
     def save_result(self, result, correct, feedback):
-        update_error_rate_template = "UPDATE ALLERROR SET error_rate = error_num / practice_num WHERE id = ?;"
         self._connect()
         self.cursor.execute("UPDATE ALLERROR SET practice_num = practice_num + 1 WHERE id = ?;", (result["id"],))
         if not correct:
             self.cursor.execute("UPDATE ALLERROR SET error_num = error_num + 1 WHERE id = ?;", (result["id"],))
+        update_error_rate_template = "UPDATE ALLERROR SET error_rate = error_num * 1.0 / practice_num WHERE id = ?;"
         self.cursor.execute(update_error_rate_template, (result["id"],))
         self.connection.commit()
         self._close()
@@ -104,6 +104,57 @@ class DataManager:
         data = self._read_table()
 
         return data
+
+    def insert_new_row(self, note_info):
+        """
+        Inserts a new row into the ALLERROR table.
+
+        Args:
+            note_info (dict): A dictionary containing keys for the columns in the ALLERROR table:
+                - type (str): The type of the note (required).
+                - answer (str): The answer text (optional).
+                - file (str): The file name or path (optional).
+                - start_time (str): The start time (optional).
+                - end_time (str): The end time (optional).
+        """
+        self._connect()
+        try:
+            insert_query = """
+                INSERT INTO ALLERROR (type, answer, file, start_time, end_time, error_rate, error_num, practice_num)
+                VALUES (?, ?, ?, ?, ?, 0, 0, 0);
+            """
+            # Extract the necessary values from the note_info dictionary
+            self.cursor.execute(
+                insert_query,
+                (
+                    note_info.get("type"),
+                    note_info.get("answer"),
+                    note_info.get("file", None),
+                    note_info.get("start_time", None),
+                    note_info.get("end_time", None),
+                ),
+            )
+            self.connection.commit()
+            return True
+        finally:
+            self._close()
+
+    def execute(self, query, parameters=None):
+        """
+        Executes a SQL query with the given parameters and returns the cursor.
+        """
+        self._connect()
+        try:
+            if parameters is None:
+                result = self.cursor.execute(query)
+            else:
+                result = self.cursor.execute(query, parameters)
+            self.connection.commit()
+            return result
+        except Exception as e:
+            self.connection.rollback()
+            raise e
+        # Do not close the connection here; let the caller handle it.
 
 
 if __name__ == "__main__":

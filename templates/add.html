@@ -31,7 +31,7 @@
             margin-top: 15px;
             color: #555;
         }
-        input, textarea, select {
+        select, textarea, input {
             margin-top: 5px;
             padding: 10px;
             font-size: 16px;
@@ -107,7 +107,12 @@
         <textarea id="answer" name="answer" rows="4"></textarea>
 
         <label for="file">File (optional):</label>
-        <input type="text" id="file" name="file">
+        <select id="file" name="file">
+            <option value="" disabled selected>Select a file</option>
+            {% for file in files %}
+            <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
 
         <label for="start_time">Start Time (optional):</label>
         <input type="text" id="start_time" name="start_time">

@@ -5,6 +5,7 @@
 """
 from DataManager import DataManager
 from applications.app import app
+from utils.common import get_audio_files
 from flask import render_template, request, redirect, url_for
 
 __author__ = '__L1n__w@tch'
@@ -44,4 +45,4 @@ def add():
         except Exception as e:
             return f"An error occurred: {e}"
 
-    return render_template("add.html")
+    return render_template("add.html", files=get_audio_files())

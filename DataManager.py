@@ -108,9 +108,12 @@ class DataManager:
         self.connection.commit()
         self._close()
 
-    def load_cases(self) -> list:
+    def load_cases(self, specific_type=None) -> list:
         self._create_table()
         data = self._read_table()
+
+        if specific_type:
+            data = [row for row in data if row["type"] == specific_type]
 
         return data
 

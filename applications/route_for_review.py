@@ -19,7 +19,7 @@ __author__ = '__L1n__w@tch'
 reviewer = Reviewer()
 # Load cases
 DM = DataManager()
-CASES = DM.load_cases()
+CASES = DM.load_cases(specific_type="writing")
 # Global variables
 CURRENT_CASE_INDEX = -1  # Start without any active case
 CURRENT_CASE = dict()  # Active case
@@ -41,6 +41,28 @@ def _highlight_differences(user_input, correct_answer):
     return " ".join(highlighted)
 
 
+def _return_template(feedback, user_input):
+    global CURRENT_CASE_INDEX, CASES, CURRENT_CASE, PROGRESS, TOTAL_CASES
+
+    if CURRENT_CASE["type"] == "listening" or CURRENT_CASE["type"] == "word":
+        reviewer.prepare_audio_segment(CURRENT_CASE)
+        audio_file = url_for('static', filename='segment.mp3', q=str(os.path.getmtime(get_audio_path())))
+        question = None
+    else:
+        audio_file = None
+        question = CURRENT_CASE.get("question", "")
+
+    return render_template(
+        get_review_html_path(),
+        feedback=feedback,
+        question=question,
+        audio_file=audio_file,
+        user_input=user_input,
+        progress=PROGRESS,
+        case_info=CURRENT_CASE
+    )
+
+
 def _initialize_index():
     global CURRENT_CASE_INDEX, CASES, CURRENT_CASE, PROGRESS, TOTAL_CASES
 
@@ -48,17 +70,9 @@ def _initialize_index():
     if CURRENT_CASE_INDEX == -1:
         CURRENT_CASE_INDEX = 0
         CURRENT_CASE = CASES[CURRENT_CASE_INDEX]
-        reviewer.prepare_audio_segment(CURRENT_CASE)
         PROGRESS["completed"] = CURRENT_CASE_INDEX + 1
 
-    return render_template(
-        get_review_html_path(),
-        feedback=None,
-        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime(get_audio_path()))),
-        user_input="",
-        progress=PROGRESS,
-        case_info=CURRENT_CASE
-    )
+    return _return_template(None, "")
 
 
 def _index_next():
@@ -67,16 +81,9 @@ def _index_next():
     if CURRENT_CASE_INDEX >= len(CASES):
         CURRENT_CASE_INDEX = 0  # Loop back to the first case
     CURRENT_CASE = CASES[CURRENT_CASE_INDEX]
-    reviewer.prepare_audio_segment(CURRENT_CASE)
     PROGRESS["completed"] = CURRENT_CASE_INDEX + 1
-    return render_template(
-        get_review_html_path(),
-        feedback=None,
-        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime(get_audio_path()))),
-        user_input="",
-        progress=PROGRESS,
-        case_info=CURRENT_CASE
-    )
+
+    return _return_template(None, "")
 
 
 def _get_feedback(user_answer, correct_answer, case_info):
@@ -99,14 +106,7 @@ def _index_post(user_input):
     feedback = _get_feedback(user_answer, correct_answer, CURRENT_CASE)
     DM.save_result(CURRENT_CASE, user_answer == correct_answer)
 
-    return render_template(
-        get_review_html_path(),
-        feedback=feedback,
-        audio_file=url_for('static', filename='segment.mp3', q=str(os.path.getmtime(get_audio_path()))),
-        user_input=user_input,
-        progress=PROGRESS,
-        case_info=CURRENT_CASE
-    )
+    return _return_template(feedback, user_input)
 
 
 @app.route("/review", methods=["GET", "POST"])

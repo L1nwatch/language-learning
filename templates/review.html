@@ -79,10 +79,19 @@
 </div>
 
 
+{% if audio_file %}
 <audio controls>
     <source src="{{ audio_file }}" type="audio/mpeg">
     Your browser does not support the audio element.
 </audio>
+{% endif %}
+
+{% if question %}
+<div class="question">
+    <strong>Question:</strong>
+    <p>{{ question|safe }}</p>
+</div>
+{% endif %}
 
 <form method="POST" action="/review">
     <label for="answer">Enter your answer (optional):</label><br>

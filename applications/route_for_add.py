@@ -17,6 +17,7 @@ def add():
         note_info = {
             "type": request.form.get("type"),
             "answer": request.form.get("answer"),
+            "question": request.form.get("question"),
             "file": request.form.get("file"),
             "start_time": request.form.get("start_time"),
             "end_time": request.form.get("end_time"),
@@ -29,8 +30,11 @@ def add():
         elif note_info["type"] == "word":
             # Only "type" and "answer" are required for "word"
             required_fields = ["type", "answer"]
+        elif note_info["type"] == "writing":
+            # Only "type" and "answer" are required for "word"
+            required_fields = ["type", "answer", "question"]
         else:
-            return "Invalid type value. Please select 'listening' or 'word'.", 400
+            return "Invalid type value. Please select 'listening'/'word'/'writing'.", 400
 
         for field in required_fields:
             if not note_info.get(field):

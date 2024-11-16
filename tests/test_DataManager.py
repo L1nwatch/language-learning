@@ -17,7 +17,7 @@ class TestDataManager(TestCase):
     def setUp(self) -> None:
         self.dm = DataManager()
 
-    def test_add_case(self):
+    def test_add_listening(self):
         # Arrange
         note_info = {
             "type": "listening",
@@ -57,6 +57,74 @@ class TestDataManager(TestCase):
         deleted_row = self.dm.execute(verify_query, delete_parameters).fetchone()
         self.assertIsNone(deleted_row, "Row deletion after test failed.")
 
+    def test_add_word(self):
+        note_info = {
+            "type": "word",
+            "answer": "word",
+        }
+
+        # Act: Insert the new row
+        result = self.dm.insert_new_row(note_info)
+        self.assertTrue(result, "Row insertion failed.")
+
+        # Fetch the inserted row to verify it exists
+        query = """
+            SELECT * FROM ALLERROR 
+            WHERE type = ? AND answer = ?
+        """
+        parameters = (
+            note_info["type"],
+            note_info["answer"],
+        )
+        inserted_row = self.dm.execute(query, parameters).fetchone()
+
+        self.assertIsNotNone(inserted_row, "Inserted row not found in the database.")
+
+        # Clean up: Delete the row after test
+        delete_query = "DELETE FROM ALLERROR WHERE id = ?"
+        delete_parameters = (inserted_row[0],)
+        self.dm.execute(delete_query, delete_parameters)
+
+        # Verify the row was deleted
+        verify_query = "SELECT * FROM ALLERROR WHERE id = ?"
+        deleted_row = self.dm.execute(verify_query, delete_parameters).fetchone()
+        self.assertIsNone(deleted_row, "Row deletion after test failed.")
+
+    def test_add_writing(self):
+        note_info = {
+            "type": "writing",
+            "question": "My name is Tom and I bought a travel insurance from your company.",
+            "answer": "My name is Tom, and I bought travel insurance from your company.",
+        }
+
+        # Act: Insert the new row
+        result = self.dm.insert_new_row(note_info)
+        self.assertTrue(result, "Row insertion failed.")
+
+        # Fetch the inserted row to verify it exists
+        query = """
+            SELECT * FROM ALLERROR 
+            WHERE type = ? AND answer = ? AND question = ?
+        """
+        parameters = (
+            note_info["type"],
+            note_info["answer"],
+            note_info["question"],
+        )
+        inserted_row = self.dm.execute(query, parameters).fetchone()
+
+        self.assertIsNotNone(inserted_row, "Inserted row not found in the database.")
+
+        # Clean up: Delete the row after test
+        delete_query = "DELETE FROM ALLERROR WHERE id = ?"
+        delete_parameters = (inserted_row[0],)
+        self.dm.execute(delete_query, delete_parameters)
+
+        # Verify the row was deleted
+        verify_query = "SELECT * FROM ALLERROR WHERE id = ?"
+        deleted_row = self.dm.execute(verify_query, delete_parameters).fetchone()
+        self.assertIsNone(deleted_row, "Row deletion after test failed.")
+
     def test_load_cases(self):
         result = self.dm.load_cases()
         self.assertIsInstance(result, list)
@@ -67,3 +135,4 @@ class TestDataManager(TestCase):
             self.assertIn("type", result[0])
             self.assertIn("start_time", result[0])
             self.assertIn("end_time", result[0])
+            self.assertIn("question", result[0])

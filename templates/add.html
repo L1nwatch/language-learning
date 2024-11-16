@@ -11,6 +11,7 @@
             padding: 0;
             background-color: #f9f9f9;
         }
+
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -19,18 +20,22 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             text-align: center;
             color: #333;
         }
+
         form {
             display: flex;
             flex-direction: column;
         }
+
         label {
             margin-top: 15px;
             color: #555;
         }
+
         select, textarea, input {
             margin-top: 5px;
             padding: 10px;
@@ -38,6 +43,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
         button {
             margin-top: 20px;
             padding: 10px;
@@ -48,6 +54,7 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #0056b3;
         }
@@ -57,11 +64,13 @@
             const type = document.getElementById("type").value;
 
             // Get input fields and labels
+            const question = document.getElementById("question");
             const answer = document.getElementById("answer");
             const file = document.getElementById("file");
             const startTime = document.getElementById("start_time");
             const endTime = document.getElementById("end_time");
 
+            const questionLabel = document.querySelector("label[for='question']");
             const fileLabel = document.querySelector("label[for='file']");
             const startTimeLabel = document.querySelector("label[for='start_time']");
             const endTimeLabel = document.querySelector("label[for='end_time']");
@@ -69,24 +78,40 @@
             if (type === "listening") {
                 // Set all fields as required for "listening"
                 answer.required = true;
+                question.required = false;
                 file.required = true;
                 startTime.required = true;
                 endTime.required = true;
 
                 // Update labels to show "required"
+                questionLabel.textContent = "Question (optional):";
                 fileLabel.textContent = "File (required):";
                 startTimeLabel.textContent = "Start Time (required):";
                 endTimeLabel.textContent = "End Time (required):";
             } else if (type === "word") {
                 // Only "type" and "answer" are required for "word"
                 answer.required = true;
+                question.required = false;
                 file.required = false;
                 startTime.required = false;
                 endTime.required = false;
 
                 // Update labels to show "optional"
+                questionLabel.textContent = "Question (optional):";
                 fileLabel.textContent = "File (optional):";
                 startTimeLabel.textContent = "Start Time (optional):";
+                endTimeLabel.textContent = "End Time (optional):";
+            } else if (type === "writing") {
+                answer.required = true;
+                question.required = true;
+                file.required = false;
+                startTime.required = false;
+                endTime.required = false;
+
+                questionLabel.textContent = "Question (required):";
+                fileLabel.textContent = "File (optional):";
+                startTimeLabel.textContent = "Start Time (optional):";
+                endTimeLabel.textContent = "End Time (optional):";
                 endTimeLabel.textContent = "End Time (optional):";
             }
         }
@@ -101,7 +126,11 @@
             <option value="" disabled selected>Select type</option>
             <option value="listening">Listening</option>
             <option value="word">Word</option>
+            <option value="writing">Writing</option>
         </select>
+
+        <label for="question">Question (required):</label>
+        <textarea id="question" name="question" rows="4"></textarea>
 
         <label for="answer">Answer (required):</label>
         <textarea id="answer" name="answer" rows="4"></textarea>

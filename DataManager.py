@@ -34,6 +34,7 @@ class DataManager:
     id INTEGER PRIMARY KEY,
     type TEXT NOT NULL,
     answer TEXT NOT NULL,
+    question TEXT,
     file TEXT,
     start_time TEXT,
     end_time TEXT,
@@ -43,7 +44,7 @@ class DataManager:
     );
 """)
         # try:
-        #     self.cursor.execute("ALTER TABLE ALLERROR ADD COLUMN practice_num INTEGER DEFAULT 0;")
+        #     self.cursor.execute("ALTER TABLE ALLERROR ADD COLUMN question TEXT;")
         # except sqlite3.OperationalError as e:
         #     if "duplicate column name" in str(e):
         #         print("Column 'error_rate' already exists.")
@@ -128,8 +129,8 @@ class DataManager:
         self._connect()
         try:
             insert_query = """
-                INSERT INTO ALLERROR (type, answer, file, start_time, end_time, error_rate, error_num, practice_num)
-                VALUES (?, ?, ?, ?, ?, 0, 0, 0);
+                INSERT INTO ALLERROR (type, answer, question, file, start_time, end_time, error_rate, error_num, practice_num)
+                VALUES (?, ?, ?, ?, ?, ?, 0, 0, 0);
             """
             # Extract the necessary values from the note_info dictionary
             self.cursor.execute(
@@ -137,6 +138,7 @@ class DataManager:
                 (
                     note_info.get("type"),
                     note_info.get("answer"),
+                    note_info.get("question", None),
                     note_info.get("file", None),
                     note_info.get("start_time", None),
                     note_info.get("end_time", None),

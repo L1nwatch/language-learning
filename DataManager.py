@@ -89,7 +89,15 @@ class DataManager:
         self.connection.commit()
         self._close()
 
-    def save_result(self, result, correct, feedback):
+    def correct_result(self, result):
+        self._connect()
+        self.cursor.execute("UPDATE ALLERROR SET error_num = error_num - 1 WHERE id = ?;", (result["id"],))
+        update_error_rate_template = "UPDATE ALLERROR SET error_rate = error_num * 1.0 / practice_num WHERE id = ?;"
+        self.cursor.execute(update_error_rate_template, (result["id"],))
+        self.connection.commit()
+        self._close()
+
+    def save_result(self, result, correct):
         self._connect()
         self.cursor.execute("UPDATE ALLERROR SET practice_num = practice_num + 1 WHERE id = ?;", (result["id"],))
         if not correct:

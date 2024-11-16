@@ -4,10 +4,13 @@
 """ Description
 """
 import os
+import html
+import json
+import ast
 from applications.app import app
 from DataManager import DataManager
 from Reviewer import Reviewer
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, jsonify
 from utils.common import get_audio_path, get_review_html_path
 from difflib import Differ
 
@@ -76,10 +79,13 @@ def _index_next():
     )
 
 
-def _get_feedback(user_answer, correct_answer):
+def _get_feedback(user_answer, correct_answer, case_info):
+    feedback = {"content": "", "case_info": case_info}
     if user_answer == correct_answer:
-        return "<span style='color: green;'>Correct! 🎉</span>"
-    return _highlight_differences(user_answer, correct_answer)
+        feedback["content"] = "<span style='color: green;'>Correct! 🎉</span>"
+    else:
+        feedback["content"] = _highlight_differences(user_answer, correct_answer)
+    return feedback
 
 
 def _index_post(user_input):
@@ -90,8 +96,8 @@ def _index_post(user_input):
     # Handle form submission (user's answer)
     user_answer = user_input.lower()
     correct_answer = CURRENT_CASE.get("answer", "").strip().lower()
-    feedback = _get_feedback(user_answer, correct_answer)
-    DM.save_result(CURRENT_CASE, user_answer == correct_answer, feedback)
+    feedback = _get_feedback(user_answer, correct_answer, CURRENT_CASE)
+    DM.save_result(CURRENT_CASE, user_answer == correct_answer)
 
     return render_template(
         get_review_html_path(),
@@ -112,6 +118,26 @@ def review():
         return _index_post(user_input)
 
     return _initialize_index()
+
+
+@app.route('/correct-feedback', methods=['POST'])
+def correct_feedback():
+    global DM
+    try:
+        # Parse the JSON data from the request
+        data = request.get_json()
+        feedback = data.get('feedback', {})
+
+        # Process the feedback (add your logic here)
+        DM.correct_result(ast.literal_eval(html.unescape(feedback)))
+
+        # Return a successful response
+        return jsonify({"success": True, "corrected_feedback": "Corrected!"})
+    except Exception as e:
+        # Log the error (optional)
+        print(f"Error: {e}")
+        # Return an error response
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route("/replay")

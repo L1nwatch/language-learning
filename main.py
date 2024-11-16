@@ -11,4 +11,4 @@ import applications.route_for_review
 import applications.route_for_add
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="192.168.2.14")

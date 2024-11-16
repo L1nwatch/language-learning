@@ -59,12 +59,12 @@ class DataManager:
         # Create a fresh cursor after setting row_factory
         cursor = self.connection.cursor()
 
-        # Use custom sorting to rank NULLs at the top
+        # Modify the query to prioritize practice_num = 0
         result = cursor.execute("""
             SELECT * 
             FROM ALLERROR 
             ORDER BY 
-                CASE WHEN error_rate IS NULL THEN 0 ELSE 1 END, 
+                CASE WHEN practice_num = 0 THEN 0 ELSE 1 END, 
                 error_rate DESC;
         """)
 

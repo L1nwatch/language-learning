@@ -19,7 +19,7 @@ __author__ = '__L1n__w@tch'
 reviewer = Reviewer()
 # Load cases
 DM = DataManager()
-CASES = DM.load_cases(specific_type="writing")
+CASES = DM.load_cases(specific_type=None)
 # Global variables
 CURRENT_CASE_INDEX = -1  # Start without any active case
 CURRENT_CASE = dict()  # Active case

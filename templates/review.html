@@ -61,6 +61,18 @@
 <body>
 <h1>Language Review Tool</h1>
 
+<div class="description">
+    <strong>About this tool:</strong>
+    <p>The Language Review Tool helps you practice and improve your listening and writing skills.
+        You can listen to audio, watch videos, answer questions, and receive feedback on your responses.
+        Progress and error tracking ensure continuous improvement. Use the keyboard shortcuts below to navigate efficiently:</p>
+    <ul>
+        <li><strong>Enter</strong>: Submit your answer.</li>
+        <li><strong>Arrow Right</strong>: Move to the next audio file.</li>
+        <li><strong>Arrow Down</strong>: Play/Pause the audio.</li>
+    </ul>
+</div>
+
 <div class="progress-container">
     <div class="progress-header">
         <strong>Progress:</strong> {{ progress.completed }}/{{ progress.total }} ({{ '%.2f'|format((progress.completed /
@@ -80,7 +92,7 @@
 
 
 {% if audio_file %}
-<audio controls>
+<audio controls id="reviewAudio">
     <source src="{{ audio_file }}" type="audio/mpeg">
     Your browser does not support the audio element.
 </audio>
@@ -93,10 +105,10 @@
 </div>
 {% endif %}
 
-<form method="POST" action="/review">
+<form method="POST" action="/review" id="reviewForm">
     <label for="answer">Enter your answer (optional):</label><br>
     <textarea id="answer" name="answer" placeholder="Type your answer here...">{{ user_input }}</textarea><br>
-    <button type="submit" name="submit">Submit</button>
+    <button type="submit" name="submitButton">Submit</button>
     <button type="submit" name="next">Next Audio</button>
 </form>
 
@@ -110,34 +122,104 @@
 {% endif %}
 </body>
 <script>
-    document.getElementById("correctFeedbackButton").addEventListener("click", function () {
-        // Display a loading message
-        const messageElement = document.getElementById("feedbackMessage");
-        messageElement.style.display = "block";
-        messageElement.textContent = "Processing your request, please wait...";
-
-        // Send the request to the backend
-        fetch("{{ url_for('correct_feedback') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({feedback: "{{ feedback.case_info }}"}) // Send the current feedback
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    messageElement.textContent = "Your feedback has been corrected successfully!";
+    document.addEventListener("DOMContentLoaded", function () {
+        const correctButton = document.getElementById("correctFeedbackButton");
+        if (correctButton) {
+            correctButton.addEventListener("click", function () {
+                // Display a loading message
+                const messageElement = document.getElementById("feedbackMessage");
+                if (messageElement) {
+                    messageElement.style.display = "block";
+                    messageElement.style.color = ""; // Reset to default color
+                    messageElement.textContent = "Processing your request, please wait...";
                 } else {
-                    messageElement.style.color = "red";
-                    messageElement.textContent = "There was an issue correcting your feedback. Please try again.";
+                    console.error("Feedback message element not found.");
+                    return;
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                messageElement.style.color = "red";
-                messageElement.textContent = "An unexpected error occurred.";
+
+                // Send the request to the backend
+                fetch("/correct-feedback", { // Use the correct route URL
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ feedback: "Your feedback data here" }) // Replace placeholder with dynamic data
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            messageElement.style.color = "green";
+                            messageElement.textContent = "Your feedback has been corrected successfully!";
+                        } else {
+                            messageElement.style.color = "red";
+                            messageElement.textContent = "There was an issue correcting your feedback. Please try again.";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        messageElement.style.color = "red";
+                        messageElement.textContent = "An unexpected error occurred.";
+                    });
             });
+        } else {
+            console.info("Correct Feedback button not found.");
+        }
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOMContentLoaded event triggered");
+
+        document.addEventListener("keydown", function (event) {
+            console.log("Key pressed: ", event.key, "Code: ", event.code);
+
+            // Handle Enter key for form submission
+            if (event.key === "Enter") {
+                event.preventDefault();
+                console.log("Enter key detected");
+                const reviewForm = document.getElementById("reviewForm");
+                if (reviewForm) {
+                    console.log("Submitting the form");
+                    reviewForm.submit(); // Submit the form
+                } else {
+                    console.error("Form element not found");
+                }
+            }
+
+            // Handle Arrow keys
+            switch (event.key) {
+                case "ArrowRight":
+                    event.preventDefault();
+                    console.log("ArrowRight key detected");
+                    const nextButton = document.querySelector("button[name='next']");
+                    if (nextButton) {
+                        console.log("Next button clicked");
+                        nextButton.click();
+                    } else {
+                        console.error("Next button not found");
+                    }
+                    break;
+                case "ArrowDown":
+                    event.preventDefault();
+                    console.log("ArrowDown key detected");
+                    const video = document.getElementById("reviewAudio");
+                    if (video) {
+                        if (video.paused) {
+                            console.log("Playing audio");
+                            video.play();
+                        } else {
+                            console.log("Pausing audio");
+                            video.pause();
+                        }
+                    } else {
+                        console.error("Video element not found");
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        });
     });
 </script>
 

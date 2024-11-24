@@ -115,7 +115,13 @@ class DataManager:
         if specific_type:
             data = [row for row in data if row["type"] == specific_type]
 
-        return data
+        final_data = list()
+        for each_data in data:
+            if each_data["practice_num"] >= 5 and each_data["error_rate"] == 0:
+                continue
+            final_data.append(each_data)
+
+        return final_data
 
     def insert_new_row(self, note_info):
         """

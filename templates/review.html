@@ -138,12 +138,12 @@
                 }
 
                 // Send the request to the backend
-                fetch("/correct-feedback", { // Use the correct route URL
+                fetch("{{ url_for('correct_feedback') }}", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ feedback: "Your feedback data here" }) // Replace placeholder with dynamic data
+                    body: JSON.stringify({feedback: "{{ feedback.case_info }}"})
                 })
                     .then(response => response.json())
                     .then(data => {

@@ -68,7 +68,7 @@
         Progress and error tracking ensure continuous improvement. Use the keyboard shortcuts below to navigate efficiently:</p>
     <ul>
         <li><strong>Enter</strong>: Submit your answer.</li>
-        <li><strong>Arrow Right</strong>: Move to the next audio file.</li>
+        <li><strong>Page Down</strong>: Move to the next audio file.</li>
         <li><strong>Arrow Down</strong>: Play/Pause the audio.</li>
     </ul>
 </div>
@@ -123,6 +123,14 @@
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        const answerBox = document.getElementById("answer");
+        if (answerBox) {
+            answerBox.focus(); // Automatically set focus on the input box
+            console.log("Textarea focused");
+        } else {
+            console.error("Textarea not found");
+        }
+
         const correctButton = document.getElementById("correctFeedbackButton");
         if (correctButton) {
             correctButton.addEventListener("click", function () {
@@ -188,9 +196,9 @@
 
             // Handle Arrow keys
             switch (event.key) {
-                case "ArrowRight":
+                case "PageDown":
                     event.preventDefault();
-                    console.log("ArrowRight key detected");
+                    console.log("PageDown key detected");
                     const nextButton = document.querySelector("button[name='next']");
                     if (nextButton) {
                         console.log("Next button clicked");

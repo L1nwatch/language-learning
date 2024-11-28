@@ -119,6 +119,8 @@ class DataManager:
         for each_data in data:
             if each_data["practice_num"] >= 5 and each_data["error_rate"] == 0:
                 continue
+            elif each_data["practice_num"] >= 8 and each_data["error_rate"] <= 0.15:
+                continue
             final_data.append(each_data)
 
         return final_data

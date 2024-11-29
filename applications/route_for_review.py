@@ -101,8 +101,8 @@ def _index_post(user_input):
         return _index_next()
 
     # Handle form submission (user's answer)
-    user_answer = user_input.lower()
-    correct_answer = CURRENT_CASE.get("answer", "").strip().lower()
+    user_answer = user_input.lower().strip()
+    correct_answer = CURRENT_CASE.get("answer", "").lower().strip()
     feedback = _get_feedback(user_answer, correct_answer, CURRENT_CASE)
     DM.save_result(CURRENT_CASE, user_answer == correct_answer)
 

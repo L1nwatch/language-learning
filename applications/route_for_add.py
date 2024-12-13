@@ -5,10 +5,37 @@
 """
 from DataManager import DataManager
 from applications.app import app
-from utils.common import get_audio_files
-from flask import render_template, request, redirect, url_for
+from utils.common import get_audio_path, get_audio_files
+from werkzeug.utils import secure_filename
+from AudioProvider import AudioProvider
+from flask import render_template, request, redirect, url_for, jsonify, send_file
 
 __author__ = '__L1n__w@tch'
+
+
+@app.route("/preview_audio", methods=["POST"])
+def preview_audio():
+    data = request.json
+    file_name = secure_filename(data.get("file"))
+    start_time = data.get("start_time")
+    end_time = data.get("end_time")
+
+    if not file_name or not start_time or not end_time:
+        return jsonify({"error": "Invalid parameters"}), 400
+
+    try:
+        ap = AudioProvider()
+        ap.prepare_audio_segment(
+            {"file": file_name, "type": "listening", "start_time": start_time, "end_time": end_time}
+        )
+        return jsonify({"audio_url": f"/preview_audio_path"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route(f"/preview_audio_path")
+def serve_audio():
+    return send_file(get_audio_path())
 
 
 @app.route("/add", methods=["GET", "POST"])

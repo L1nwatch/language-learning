@@ -11,7 +11,7 @@ from utils.common import get_audio_path, RESOURCE_ROOT
 __author__ = '__L1n__w@tch'
 
 
-class Reviewer:
+class AudioProvider:
     listening_root = "/Users/watch/PycharmProjects/language-learning/data/listening"
 
     def _time_to_milliseconds(self, time_str):

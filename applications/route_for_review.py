@@ -9,14 +9,14 @@ import json
 import ast
 from applications.app import app
 from DataManager import DataManager
-from Reviewer import Reviewer
+from AudioProvider import AudioProvider
 from flask import render_template, request, redirect, url_for, jsonify
 from utils.common import get_audio_path, get_review_html_path
 from difflib import Differ
 
 __author__ = '__L1n__w@tch'
 
-reviewer = Reviewer()
+ap = AudioProvider()
 # Load cases
 DM = DataManager()
 CASES = DM.load_cases(specific_type=None)
@@ -45,7 +45,7 @@ def _return_template(feedback, user_input):
     global CURRENT_CASE_INDEX, CASES, CURRENT_CASE, PROGRESS, TOTAL_CASES
 
     if CURRENT_CASE["type"] == "listening" or CURRENT_CASE["type"] == "word":
-        reviewer.prepare_audio_segment(CURRENT_CASE)
+        ap.prepare_audio_segment(CURRENT_CASE)
         audio_file = url_for('static', filename='segment.mp3', q=str(os.path.getmtime(get_audio_path())))
         question = None
     else:

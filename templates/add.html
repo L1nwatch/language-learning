@@ -58,6 +58,10 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
     <script>
         function updateFormRequirements() {
@@ -69,6 +73,7 @@
             const file = document.getElementById("file");
             const startTime = document.getElementById("start_time");
             const endTime = document.getElementById("end_time");
+            const audioPlayerDiv = document.getElementById("audio_player_div");
 
             const questionLabel = document.querySelector("label[for='question']");
             const fileLabel = document.querySelector("label[for='file']");
@@ -83,38 +88,88 @@
                 startTime.required = true;
                 endTime.required = true;
 
+                // Show the audio player section
+                audioPlayerDiv.classList.remove("hidden");
+
                 // Update labels to show "required"
                 questionLabel.textContent = "Question (optional):";
                 fileLabel.textContent = "File (required):";
                 startTimeLabel.textContent = "Start Time (required):";
                 endTimeLabel.textContent = "End Time (required):";
-            } else if (type === "word") {
-                // Only "type" and "answer" are required for "word"
+            } else {
+                // Default behavior for other types
                 answer.required = true;
-                question.required = false;
+                question.required = type === "writing";
                 file.required = false;
                 startTime.required = false;
                 endTime.required = false;
 
-                // Update labels to show "optional"
-                questionLabel.textContent = "Question (optional):";
-                fileLabel.textContent = "File (optional):";
-                startTimeLabel.textContent = "Start Time (optional):";
-                endTimeLabel.textContent = "End Time (optional):";
-            } else if (type === "writing") {
-                answer.required = true;
-                question.required = true;
-                file.required = false;
-                startTime.required = false;
-                endTime.required = false;
+                // Hide the audio player section
+                audioPlayerDiv.classList.add("hidden");
 
-                questionLabel.textContent = "Question (required):";
+                // Update labels to reflect requirements
+                questionLabel.textContent = type === "writing" ? "Question (required):" : "Question (optional):";
                 fileLabel.textContent = "File (optional):";
                 startTimeLabel.textContent = "Start Time (optional):";
-                endTimeLabel.textContent = "End Time (optional):";
                 endTimeLabel.textContent = "End Time (optional):";
             }
         }
+
+        function previewAudio() {
+            const fileSelect = document.getElementById("file");
+            const audioSource = document.getElementById("audio_source");
+            const selectedFile = fileSelect.value;
+
+            if (selectedFile) {
+                audioSource.src = `/path/to/audio/files/${selectedFile}`; // Update path as necessary
+                const audioPlayer = document.querySelector("audio");
+                audioPlayer.load();
+                audioPlayer.play();
+            } else {
+                alert("Please select a file to preview.");
+            }
+        }
+
+        function previewAudio() {
+            const fileSelect = document.getElementById("file");
+            const startTime = document.getElementById("start_time").value;
+            const endTime = document.getElementById("end_time").value;
+            const audioSource = document.getElementById("audio_source");
+            const selectedFile = fileSelect.value;
+
+            if (!selectedFile || !startTime || !endTime) {
+                alert("Please select a file and provide start and end times.");
+                return;
+            }
+
+            fetch("/preview_audio", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    file: selectedFile,
+                    start_time: startTime,
+                    end_time: endTime,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.audio_url) {
+                        audioSource.src = `${data.audio_url}?t=${new Date().getTime()}`;
+                        const audioPlayer = document.querySelector("audio");
+                        audioPlayer.load();
+                        audioPlayer.play();
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    alert("An error occurred while generating the audio preview.");
+                });
+        }
+
     </script>
 </head>
 <body>
@@ -142,6 +197,14 @@
             <option value="{{ file }}">{{ file }}</option>
             {% endfor %}
         </select>
+
+        <div id="audio_player_div" class="hidden">
+            <audio controls>
+                <source src="" id="audio_source" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <button type="button" onclick="previewAudio()">Preview</button>
+        </div>
 
         <label for="start_time">Start Time (optional):</label>
         <input type="text" id="start_time" name="start_time">

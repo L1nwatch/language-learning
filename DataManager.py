@@ -113,7 +113,7 @@ class DataManager:
         data = self._read_table()
 
         if specific_type:
-            data = [row for row in data if row["type"] == specific_type]
+            data = [row for row in data if row["type"] in specific_type]
 
         final_data = list()
         for each_data in data:

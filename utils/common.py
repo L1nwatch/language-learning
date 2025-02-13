@@ -21,6 +21,7 @@ def get_audio_files():
 
 def get_audio_path():
     global RESOURCE_ROOT
+    os.makedirs(RESOURCE_ROOT, exist_ok=True)
     return os.path.join(RESOURCE_ROOT, "segment.mp3")
 
 

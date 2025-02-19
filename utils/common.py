@@ -11,12 +11,12 @@ import os.path
 ROOT = os.path.dirname(os.path.dirname(__file__))
 RESOURCE_ROOT = os.path.join(ROOT, "static")
 TEMPLATES_ROOT = os.path.join(ROOT, "templates")
-DATA_ROOT = os.path.join(ROOT, "data")
+LISTENING_ROOT = "/Volumes/MyExternalDisk/the_big_bang_theory/S1"
 
 
 def get_audio_files():
-    global DATA_ROOT
-    return os.listdir(os.path.join(DATA_ROOT, "listening"))
+    global LISTENING_ROOT
+    return os.listdir(LISTENING_ROOT)
 
 
 def get_audio_path():

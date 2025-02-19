@@ -40,6 +40,8 @@ def serve_audio():
 
 @app.route("/add", methods=["GET", "POST"])
 def add():
+    db_handler = DataManager()
+
     if request.method == "POST":
         note_info = {
             "type": request.form.get("type"),
@@ -69,11 +71,14 @@ def add():
 
         # Insert into database
         try:
-            db_handler = DataManager()
             success = db_handler.insert_new_row(note_info)
             if success:
                 return redirect(url_for("add"))
         except Exception as e:
             return f"An error occurred: {e}"
 
-    return render_template("add.html", files=get_audio_files())
+    default_file = db_handler.get_last_listening_file()
+    return render_template("add.html", files=get_audio_files(), default_file=default_file)
+
+
+# So if a photon is directed through a plane with two slits in ti and either slit is observed, it will not go through both slits. If it's unobserved, it will.

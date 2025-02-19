@@ -194,7 +194,7 @@
         <select id="file" name="file">
             <option value="" disabled selected>Select a file</option>
             {% for file in files %}
-            <option value="{{ file }}">{{ file }}</option>
+            <option value="{{ file }}" {% if file == default_file %}selected{% endif %}>{{ file }}</option>
             {% endfor %}
         </select>
 

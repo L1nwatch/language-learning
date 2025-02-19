@@ -177,6 +177,13 @@ class DataManager:
             raise e
         # Do not close the connection here; let the caller handle it.
 
+    def get_last_listening_file(self):
+        self._connect()
+        result = self.cursor.execute("SELECT file FROM ALLERROR WHERE type = 'listening' ORDER BY id DESC LIMIT 1;")
+        last_file = result.fetchone()
+        self._close()
+        return last_file[0] if last_file else None
+
 
 if __name__ == "__main__":
     # dm = DataManager()
